@@ -1,7 +1,10 @@
 import axios from 'axios';
 import { CreatePropertyData, Property } from '../types/Property';
 
-const API_URL = 'http://localhost:3000/api/properties';
+const API = import.meta.env.VITE_API_URL as string;
+
+
+const API_URL = `${API}/api/properties`;
 
 // Get all properties
 export const getProperties = async (): Promise<Property[]> => {

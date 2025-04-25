@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { CreateTaskData, Task, UpdateTaskStatusData } from '../types/Task';
 
-const API_URL = 'http://localhost:3000/api/tasks';
+const API = import.meta.env.VITE_API_URL as string;
+
+const API_URL = `${API}/api/tasks`;
 
 // Get all tasks
 export const getTasks = async (filters?: { status?: string; propertyId?: string }): Promise<Task[]> => {

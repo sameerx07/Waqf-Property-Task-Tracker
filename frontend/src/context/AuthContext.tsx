@@ -2,6 +2,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
+const API = import.meta.env.VITE_API_URL as string;
+
+
 interface User {
   _id: string;
   username: string;
@@ -33,7 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     try {
       const response = await axios.post(
-        'http://localhost:3000/api/users/login',
+        `${API}api/users/login`,
         { email, password },
         { withCredentials: true }
       );
@@ -50,7 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (username: string, email: string, password: string) => {
     try {
       await axios.post(
-        'http://localhost:3000/api/users/register',
+        `${API}/api/users/register`,
         { username, email, password },
         { withCredentials: true }
       );
@@ -64,7 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       await axios.post(
-        'http://localhost:3000/api/users/logout',
+        `${API}/api/users/logout`,
         {},
         { withCredentials: true }
       );
