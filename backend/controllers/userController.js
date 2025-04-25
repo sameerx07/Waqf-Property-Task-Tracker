@@ -6,8 +6,8 @@ const generateToken = (id) =>
 
 const cookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'None',
+  secure: process.env.NODE_ENV === 'production', // Secure cookie in production
+  sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Crucial for cross-origin
   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
 };
 

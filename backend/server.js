@@ -24,10 +24,10 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-// ✅ CORS setup for both dev and production
+// CORS setup for both dev and production
 const allowedOrigins = [
-  'http://localhost:5173',
-  'https://waqf-task-tracker.netlify.app'
+  'http://localhost:5173', // Local frontend
+  'https://waqf-task-tracker.netlify.app', // Production frontend
 ];
 
 app.use(
