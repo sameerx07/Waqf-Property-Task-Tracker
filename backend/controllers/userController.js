@@ -7,7 +7,7 @@ const generateToken = (id) =>
 const cookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax',
+  sameSite: 'None',
   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
 };
 
