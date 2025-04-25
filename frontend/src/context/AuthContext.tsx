@@ -57,9 +57,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         { username, email, password },
         { withCredentials: true }
       );
-      toast.success('Registration successful. Please login.');
+    
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Registration failed');
+      error(error.response?.data?.message || 'Registration failed');
       throw error;
     }
   };
