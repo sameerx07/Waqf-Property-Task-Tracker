@@ -15,7 +15,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Global handlers to catch stray errors
+// Global error handlers
 process.on('unhandledRejection', (reason) => {
   console.error('Unhandled Rejection:', reason);
 });
@@ -24,15 +24,28 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-// CORS + body‐parsing + cookies
+// ✅ CORS setup for both dev and production
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://waqf-task-tracker.netlify.app'
+];
+
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   })
 );
+
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -42,17 +55,17 @@ app.use('/api/properties', propertyRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/users', userRoutes);
 
-// Health-check
+// Health check
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Error middleware (must go last)
+// Error middleware
 app.use(errorHandler);
 
-// Start server *only after* DB is connected
+// Start server
 async function startServer() {
-  await connectDB(); // will exit(1) on failure
+  await connectDB();
   app.listen(PORT, () => {
     console.log(`✔ Server running on http://localhost:${PORT}`);
   });
