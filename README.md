@@ -72,7 +72,7 @@ A sleek MERN stack application for property managers to efficiently track tasks 
 
 
  **🗂️ Project Structure**
-       project/
+        project/
 ├── backend/ 🖥️
 │   ├── config/     - Database settings 📄
 │   ├── controllers/ - Route handlers 🧰
