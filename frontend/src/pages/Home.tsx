@@ -5,8 +5,35 @@ import { getTasks } from '../services/taskService';
 import { getProperties } from '../services/propertyService';
 import { Building2, ClipboardList, Plus, AlertCircle } from 'lucide-react';
 
+import { Task } from '../types/Task';
+
+// Removed unused Property interface
+
+interface StatsCardProps {
+  title: string;
+  value: number;
+  icon: React.ReactNode;
+  link: string;
+  linkText: string;
+  iconColor: string;
+  highlight?: boolean;
+}
+
+interface ActionLinkProps {
+  to: string;
+  icon: React.ReactNode;
+  label: string;
+  description: string;
+}
+
 const Home: React.FC = () => {
-  const [taskStats, setTaskStats] = useState({
+  const [taskStats, setTaskStats] = useState<{
+    total: number;
+    pending: number;
+    inProgress: number;
+    completed: number;
+    overdue: number;
+  }>({
     total: 0,
     pending: 0,
     inProgress: 0,
@@ -14,29 +41,21 @@ const Home: React.FC = () => {
     overdue: 0,
   });
   
-  const [propertyCount, setPropertyCount] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [propertyCount, setPropertyCount] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
   
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
+      
       try {
-        setLoading(true);
         const [tasks, properties] = await Promise.all([
           getTasks(),
-          getProperties(),
+          getProperties()
         ]);
         
         setPropertyCount(properties.length);
-        
-        const stats = {
-          total: tasks.length,
-          pending: tasks.filter(task => task.status === 'Pending').length,
-          inProgress: tasks.filter(task => task.status === 'In Progress').length,
-          completed: tasks.filter(task => task.status === 'Completed').length,
-          overdue: tasks.filter(task => task.isOverdue && task.status !== 'Completed').length,
-        };
-        
-        setTaskStats(stats);
+        setTaskStats(calculateStats(tasks));
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -47,6 +66,45 @@ const Home: React.FC = () => {
     fetchData();
   }, []);
   
+  const calculateStats = (tasks: Task[]): {
+    total: number;
+    pending: number;
+    inProgress: number;
+    completed: number;
+    overdue: number;
+  } => {
+    return tasks.reduce(
+      (acc, task) => {
+        acc.total++;
+        
+        switch(task.status) {
+          case 'Pending':
+            acc.pending++;
+            break;
+          case 'In Progress':
+            acc.inProgress++;
+            break;
+          case 'Completed':
+            acc.completed++;
+            break;
+        }
+        
+        if (task.isOverdue && task.status !== 'Completed') {
+          acc.overdue++;
+        }
+        
+        return acc;
+      },
+      {
+        total: 0,
+        pending: 0,
+        inProgress: 0,
+        completed: 0,
+        overdue: 0
+      }
+    );
+  };
+
   return (
     <Layout>
       <div className="max-w-4xl mx-auto">
@@ -66,7 +124,7 @@ const Home: React.FC = () => {
             <p className="text-gray-600">Loading dashboard...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 ">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <StatsCard 
               title="Properties"
               value={propertyCount}
@@ -124,7 +182,7 @@ const Home: React.FC = () => {
                 label="Create New Task"
                 description="Add a new task for a property"
               />
-              
+                           
               <ActionLink
                 to="/tasks"
                 icon={<ClipboardList size={18} />}
@@ -137,14 +195,14 @@ const Home: React.FC = () => {
           <div className="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-lg shadow-md p-6 text-white">
             <h2 className="text-xl font-semibold mb-4">About Waqf Management</h2>
             
-            <p className="mb-4 text-emerald-50">
+            <p className="mb-4">
               Waqf properties are religious endowments that serve the community. Proper management
               ensures these assets continue to benefit people for generations.
             </p>
             
             <div className="bg-white/20 rounded-lg p-4 backdrop-blur-sm">
               <h3 className="font-medium mb-2">Key Responsibilities:</h3>
-              <ul className="list-disc list-inside space-y-1 text-sm text-emerald-50">
+              <ul className="list-disc list-inside space-y-1 text-sm">
                 <li>Regular maintenance and upkeep</li>
                 <li>Timely collection of rents and revenues</li>
                 <li>Legal compliance and documentation</li>
@@ -158,21 +216,11 @@ const Home: React.FC = () => {
   );
 };
 
-interface StatsCardProps {
-  title: string;
-  value: number;
-  icon: React.ReactNode;
-  link: string;
-  linkText: string;
-  iconColor: string;
-  highlight?: boolean;
-}
-
 const StatsCard: React.FC<StatsCardProps> = ({ 
   title, value, icon, link, linkText, iconColor, highlight = false 
 }) => (
   <div className={`bg-white rounded-lg shadow-md p-5 transition-all duration-300 
-    ${highlight ? 'border border-red-300 animate-pulse-subtle' : ''}`}>
+    ${highlight ? 'border border-red-300' : ''}`}>
     <div className="flex items-center mb-3">
       <div className={`rounded-full p-2 mr-3 ${iconColor}`}>
         {icon}
@@ -191,13 +239,6 @@ const StatsCard: React.FC<StatsCardProps> = ({
     </div>
   </div>
 );
-
-interface ActionLinkProps {
-  to: string;
-  icon: React.ReactNode;
-  label: string;
-  description: string;
-}
 
 const ActionLink: React.FC<ActionLinkProps> = ({ to, icon, label, description }) => (
   <Link
