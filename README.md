@@ -71,22 +71,6 @@ A sleek MERN stack application for property managers to efficiently track tasks 
     PUT /api/tasks/:id/status ⚙️ - Update task status
 
 
- **🗂️ Project Structure**
-        project/
-├── backend/ 🖥️
-│   ├── config/     - Database settings 📄
-│   ├── controllers/ - Route handlers 🧰
-│   ├── middleware/ - Security layers 🔒
-│   ├── models/     - Data schemas 📊
-│   ├── routes/     - API endpoints 📦
-│   └── server.js   - Application core 🚀
-├── src/            - React frontend 🌟
-│   ├── components/ - UI elements 🧩
-│   ├── pages/      - View templates 📄
-│   ├── services/   - API integration 🛠️
-│   └── types/      - Type definitions 📝
-└── package.json    - Project dependencies 📦
-
 **🔓 License**
    MIT License © 2023 - Feel free to fork and modify! 🛠️
 
